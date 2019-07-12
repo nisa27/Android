@@ -1,0 +1,70 @@
+package com.nisa.myuas.pengaduan;
+
+import android.app.DatePickerDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+
+import com.nisa.myuas.R;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
+public class DetailPengaduanActivity extends AppCompatActivity {
+
+    EditText edNama, edNik, edIsi;
+    Button btnUpdate, btnDelete;
+
+    public static final String KEY_ID = "key_id";
+    RealmHelper realm;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_detail_pengaduan);
+
+        realm = new RealmHelper(DetailPengaduanActivity.this);
+
+        final int dataID = getIntent().getIntExtra(KEY_ID, 0);
+
+        edNama = findViewById(R.id.ed_nama);
+        edNik = findViewById(R.id.ed_nik);
+        edIsi = findViewById(R.id.ed_isi);
+        btnUpdate = findViewById(R.id.btn_update);
+        btnDelete = findViewById(R.id.btn_delete);
+
+        CatatanModul data = realm.showOneData(dataID);
+
+        edNama.setText(data.getNama());
+        edNik.setText(data.getNik());
+        edIsi.setText(data.getIsi());
+
+
+
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CatatanModul catatan = new CatatanModul();
+                catatan.setId(dataID);
+                catatan.setNama(edNama.getText().toString());
+                catatan.setNik(edNik.getText().toString());
+                catatan.setIsi(edIsi.getText().toString());
+
+                realm.updateData(catatan);
+                finish();
+            }
+        });
+
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                realm.deleteData(dataID);
+                finish();
+            }
+        });
+    }
+}
+
